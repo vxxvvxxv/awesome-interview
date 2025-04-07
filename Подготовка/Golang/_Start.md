@@ -3,7 +3,8 @@
 - [Шпаргалка для собеса по GoLang](https://habr.com/ru/articles/758662/)
 - [Коллеги, вы меня огорчаете](https://habr.com/ru/companies/oleg-bunin/articles/521582/)
 - [Solutions for Elements of Programming Interviews problems written in Golang (work-in-progress)](https://github.com/mrekucci/epi)
-- 
+- [Awesome Go Interview ](https://awesome-go-interview.dev/)
+- [Что нужно знать бэкенд-разработчику web-приложений. Backend Roadmap (from Junior to Senior).](https://github.com/bzick/oh-my-backend)
 
 
 

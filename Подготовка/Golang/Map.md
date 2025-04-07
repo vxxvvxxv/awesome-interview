@@ -250,4 +250,5 @@ fmt.Println(ok) // false
 
 ## Каков порядок перебора в Map в Go?
 
-Случайный. Так как команда Golang TODO
+Случайный. Так как команда Golang 
+TODO
