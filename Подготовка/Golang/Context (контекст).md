@@ -94,12 +94,56 @@ type Context interface {
 #### Реализация `WithCancel`
 
 ```go
-// TODO
+type CancelCtx struct {
+    DoneChan chan struct{}
+    mu       sync.Mutex
+    canceled bool
+}
+
+func NewCancelCtx() *CancelCtx {
+    return &CancelCtx{
+        DoneChan: make(chan struct{}),
+    }
+}
+
+func (c *CancelCtx) Done() <-chan struct{} {
+    return c.DoneChan
+}
+
+func (c *CancelCtx) Cancel() {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    if !c.canceled {
+        close(c.DoneChan)
+        c.canceled = true
+    }
+}
 ```
 
 #### Реализация `WithTimeout`
 
+Можно сделать на основе предыдущего:
+
 ```go
-// TODO
+type TimeoutCtx struct {
+    *CancelCtx
+    timer *time.Timer
+}
+
+func NewTimeoutCtx(timeout time.Duration) *TimeoutCtx {
+    cancelCtx := NewCancelCtx()
+    timer := time.AfterFunc(timeout, func() {
+        cancelCtx.Cancel()
+    })
+    return &TimeoutCtx{
+        CancelCtx: cancelCtx,
+        timer:     timer,
+    }
+}
+
+func (t *TimeoutCtx) Cancel() {
+    t.timer.Stop()
+    t.CancelCtx.Cancel()
+}
 ```
 
