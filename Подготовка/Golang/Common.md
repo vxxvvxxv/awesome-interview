@@ -63,46 +63,226 @@
 - Кодогенерация
 - Рефлексия
 
-## Что такое sum types?
+# **Типы** в Go?
 
-**Sum types (суммарные типы)** — это типы, которые могут принимать одно из нескольких значений. Пример из других языков:
+Типы определяют **форму и поведение** значений: как они хранятся, как с ними можно работать, какие операции над ними допустимы.
 
-```rust
-enum Shape {
-    Circle(f64),
-    Rectangle(f64, f64),
-}
-```
+Есть 3 категории типов:
+1. **Базовые** (встроенные): `int`, `float64`, `string`, `bool`, `rune`, `byte`, `complex64`, и т.д.
+2. **Составные**: массивы, слайсы, мапы, структуры, функции, каналы.
+3. **Пользовательские типы**: созданные через `type`, на основе других.
 
-### Как реализовать в Go?
-
-В Go можно "приблизить" sum types через интерфейсы:
+## Как создать **новый тип**
 
 ```go
-type Shape interface {
-    Area() float64
-}
-
-type Circle struct {
-    Radius float64
-}
-func (c Circle) Area() float64 { return math.Pi * c.Radius * c.Radius }
-
-type Rectangle struct {
-    Width, Height float64
-}
-func (r Rectangle) Area() float64 { return r.Width * r.Height }
-
-// Использование:
-func PrintArea(s Shape) {
-    fmt.Println(s.Area())
-}
-
+type MyInt int
 ```
 
-Но **настоящих sum types (как в Haskell или Rust)** в Go нет. Это вызывает проблему "type-safe disjunction".
+Теперь `MyInt` — **новый тип**, основанный на `int`. Он **не совместим напрямую** с `int`, и требует явного преобразования.
 
-## Что такое defer
+```go
+var a MyInt = 5
+var b int = int(a) // явное приведение
+```
+
+## Зачем создавать новые типы
+
+### Больше читаемости
+
+```go
+type UserID int
+type OrderID int
+```
+
+Даже если оба — `int`, их нельзя перепутать в коде или API.
+
+### Добавление методов
+
+```go
+type Celsius float64
+
+func (c Celsius) ToFahrenheit() float64 {
+    return float64(c)*9/5 + 32
+}
+```
+
+### Ограничение API
+
+```go
+// не примет обычный int случайно
+func DoSomething(id UserID) { ... }
+```
+
+### Валидация/контроль
+
+```go
+type Email string
+
+func (e Email) Validate() bool {
+    return strings.Contains(string(e), "@")
+}
+```
+
+## Необычные и интересные кейсы
+
+### Методы на базовые типы
+
+Мы можем "обогатить" встроенные типы своим поведением.
+
+```go
+type MyString string
+
+func (s MyString) Shout() string {
+	return strings.ToUpper(string(s))
+}
+```
+
+### Типы как состояния (enum)
+
+```go
+type Status string
+
+const (
+	StatusPending  Status = "pending"
+	StatusApproved Status = "approved"
+	StatusRejected Status = "rejected"
+)
+```
+
+И используешь безопасно:
+
+```go
+func Process(status Status) {
+	switch status {
+	case StatusPending:
+		// ...
+	default:
+		// fail fast
+	}
+}
+```
+
+### Создание обёрток над внешними библиотеками
+
+```go
+type Logger struct {
+	*zap.Logger // встраивание
+}
+
+func (l Logger) Info(msg string) {
+	l.Logger.Info("[MyService] " + msg)
+}
+```
+
+### Использование в обобщениях (generics)
+
+С Go 1.18 появились дженерики, и теперь можно ограничивать типы:
+
+```go
+type MyNumber interface {
+	~int | ~float64
+}
+```
+
+## Важное отличие: **alias vs новый тип**
+
+_Описание Alias приведено ниже._
+
+```go
+type A = B // alias (один и тот же тип)
+
+type A B   // новый тип
+```
+
+Новый тип:
+
+- нельзя использовать там, где ждут исходный,
+- можно навешивать методы,
+- полезен для типобезопасности.
+
+# Alias
+
+[Source code](https://github.com/golang/go/blob/master/src/go/types/alias.go#L46)
+
+Alias — это **псевдоним типа или импорта**.
+
+## Как alias устроен внутри
+
+При компиляции `type A = B` просто **заменяется на B**, то есть в compiled code вообще нет `A`.
+
+Это **удобно** для:
+- миграции между типами    
+- совместимости в старых API
+- упрощения чтения
+
+## Импорт alias
+
+```go
+import (
+	json "encoding/json" // псевдоним для читаемости
+	j "encoding/json"    // сокращение
+)
+```
+
+## Тип alias
+
+```go
+type MyInt = int // alias (НЕ новый тип!)
+
+var x MyInt = 5 // работает как обычный int
+```
+
+Такой alias **не создаёт нового типа**. Он буквально означает: "используй `MyInt` везде как `int`".
+
+Для сравнения:
+
+```go
+type MyInt2 int // это НОВЫЙ тип
+```
+
+## Отличия alias vs новый тип
+
+|Форма|Новый тип?|Совместим с исходным?|
+|---|---|---|
+|`type A = B`|❌|✅ полностью|
+|`type A B`|✅|❌ нужно кастовать|
+
+# Go директивы (`//go:`)
+
+Go-директивы — это **специальные комментарии**, которые инструменты Go (`go`, `go vet`, `go generate`, `cgo`, и т.д.) используют как **инструкции**.
+
+## //go:generate
+
+Это **указание компилятору или IDE** на команду, которую надо запустить при `go generate`.
+
+Команда `go generate` запускает эту строку как shell-команду.
+
+Используется для генерации кода: `stringer`, `mockgen`, `protoc`, `swag`, и т.д.
+
+```go
+//go:generate stringer -type=Color
+type Color int
+
+const (
+	Red Color = iota
+	Green
+	Blue
+)
+```
+
+## Другие
+
+| Директива         | Назначение                                        |
+| ----------------- | ------------------------------------------------- |
+| `//go:embed`      | Встраивание файлов в бинарник (начиная с Go 1.16) |
+| `//go:noinline`   | Запрещает инлайнинг функции                       |
+| `//go:nosplit`    | Запрещает вставку проверки на stack overflow      |
+| `//go:linkname`   | Доступ к приватным символам в другом пакете       |
+| `//go:build`      | Условия сборки (вместо старых `+build`)           |
+| `//go:wasmimport` | Указание импорта из WebAssembly                   |
+| `//go:unsafe`     | Используется при работе с `unsafe` пакетом        |
+
+# Что такое defer
 
 Это отложенный вызов, будет вызван в моменте выхода из контекста текущей функции. Будет завершаться в порядке FILO. Будет выполнен до возврата результата (до return).
 
@@ -131,7 +311,46 @@ func main() {
 // Вывод: 2 1 0
 ```
 
-## Есть ли в Go деструкторы?
+# Что такое sum types
+
+**Sum types (суммарные типы)** — это типы, которые могут принимать одно из нескольких значений. Пример из других языков:
+
+```rust
+enum Shape {
+    Circle(f64),
+    Rectangle(f64, f64),
+}
+```
+
+### Как реализовать в Go
+
+В Go можно "приблизить" sum types через интерфейсы:
+
+```go
+type Shape interface {
+    Area() float64
+}
+
+type Circle struct {
+    Radius float64
+}
+func (c Circle) Area() float64 { return math.Pi * c.Radius * c.Radius }
+
+type Rectangle struct {
+    Width, Height float64
+}
+func (r Rectangle) Area() float64 { return r.Width * r.Height }
+
+// Использование:
+func PrintArea(s Shape) {
+    fmt.Println(s.Area())
+}
+
+```
+
+Но **настоящих sum types (как в Haskell или Rust)** в Go нет. Это вызывает проблему "type-safe disjunction".
+
+# Есть ли в Go деструкторы?
 
 **Можно сказать, что - нет**. Максимум, чем мы пользуемся на практике - это `defer`. 
 Но, мало кто знает, что в Go есть **финалайзеры (`finalizer`)**, но на практике (*почти*) никто ими не пользуется.
