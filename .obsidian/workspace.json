@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Prepare/Golang/README.md",
+                "file": "Interview/Golang/Senior/Tasks.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "Tasks"
             }
           }
         ]
@@ -141,13 +141,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Prepare/Golang/README.md",
+                "file": "Interview/Golang/Senior/Tasks.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура README"
+              "title": "Структура Tasks"
             }
           }
         ],
@@ -167,11 +167,18 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "393da88014796948",
+  "active": "441e5e89070d1bc3",
   "lastOpenFiles": [
+    "Interview/Golang/Senior/Questions.md",
     "Interview/Golang/Senior/Вопрос-ответ.md",
-    "Interview/Golang/Senior/Задачи.md",
-    "Interview/Golang/Senior/Вопросы для Senior.md",
+    "Interview/Golang/Senior/Tasks.md",
+    "Prepare/Algorythms/README.md",
+    "Prepare/Crypto/README.md",
+    "Prepare/Crypto/Hash.md",
+    "Prepare/Network/Questions.md",
+    "Prepare/Network/Что происходит, когда ввёл ссылку в браузере и получит страницу.md",
+    "Prepare/Network/TCP_UDP.md",
+    "Prepare/Golang/README.md",
     "Prepare/Golang/Common.md",
     "Prepare/Database/Theory.md",
     "Prepare/Database/PostgreSQL.md",
@@ -192,15 +199,8 @@
     "Prepare/System_design",
     "Prepare/Golang/Concurrency.md",
     "Prepare/Golang/Channel.md",
-    "Prepare/Golang/Interface.md",
-    "Prepare/Golang/OOP.md",
-    "Prepare/Network/TCP и UDP.md",
-    "Prepare/Network/HTTP.md",
-    "Подготовка/Network/HTTPS.md",
-    "Prepare/Network/REST API.md",
     "Подготовка/Network/Без названия",
     "Prepare/Brokers",
-    "Prepare/Serialize/Protobuf.md",
     "Prepare/Serialize",
     "Interview/Golang/Senior",
     "Interview/Golang",
