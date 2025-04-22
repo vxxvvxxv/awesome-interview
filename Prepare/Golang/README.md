@@ -8,6 +8,7 @@
 	- [Что нужно знать бэкенд-разработчику web-приложений. Backend Roadmap (from Junior to Senior).](https://github.com/bzick/oh-my-backend)
 - Примеры собеседований:
 	- [Собеседование Senior Go-разработчика / Даниил Подольский, Владимир Балун - Антон Зиновьев](https://www.youtube.com/watch?v=GD0iHLucYdU
+	- [Mock-собеседование Go разработчика из OZON | Самое полное интервью](https://www.youtube.com/watch?v=c8Y5PN8_Vcw)
 
 ---
 
