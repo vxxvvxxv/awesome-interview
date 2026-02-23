@@ -10,6 +10,7 @@
 - [SSH](SSH.md) — SSH протокол, ключи, туннелирование, Go SSH клиент/сервер
 - [EncodeDecode](EncodeDecode.md) — PEM/DER форматы, PKCS#8, цифровые подписи
 - [Webauthn](Webauthn.md) — WebAuthn/FIDO2, passkeys, беспарольная аутентификация
+- [JWKS](JWKS.md) — JSON Web Key Sets, ротация ключей, верификация JWT
 
 ## Быстрая шпаргалка
 
@@ -26,6 +27,7 @@
 | SSH клиент/сервер | `golang.org/x/crypto/ssh` |
 | Беспарольный вход | WebAuthn `github.com/go-webauthn/webauthn` |
 | Ключевой обмен | X25519 через `crypto/ecdh` |
+| JWT верификация (микросервисы) | JWKS + ES256 `github.com/lestrrat-go/jwx/v2` |
 
 ### Что НЕ использовать
 
